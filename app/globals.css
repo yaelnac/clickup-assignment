@@ -1,26 +1,311 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Container-orientation variants: a slide restacks when its own stage is portrait. */
+@custom-variant portrait {
+  @container (orientation: portrait) {
+    @slot;
+  }
 }
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@custom-variant landscape {
+  @container (orientation: landscape) {
+    @slot;
+  }
 }
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Pointer devices with a keyboard, for the key hint. */
+@custom-variant pointer-fine {
+  @media (hover: hover) and (pointer: fine) {
+    @slot;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* A size container: type and spacing inside use cqw / cqh. */
+@utility stage {
+  container-type: size;
 }
+
+/* ------------------------------------------------------------------ */
+/* Tones. Default is light: white, near-black type, neutral greys, one */
+/* purple accent. A dark tone stays available per chapter.             */
+/* ------------------------------------------------------------------ */
+
+:root,
+[data-tone="light"] {
+  color-scheme: light;
+  --bg: oklch(1 0 0);
+  --surface: oklch(0.965 0 0);
+  --surface-2: oklch(0.93 0 0);
+  --border: oklch(0.905 0 0);
+  --border-strong: oklch(0.78 0 0);
+  --fg-muted: oklch(0.46 0 0);
+  --fg: oklch(0.2 0 0);
+  --accent: oklch(0.6 0.19 285);
+  --accent-fg: oklch(1 0 0);
+  --hairline-shadow: 0 1px 0 oklch(0 0 0 / 0.04);
+}
+
+[data-tone="dark"] {
+  color-scheme: dark;
+  --bg: oklch(0.16 0 0);
+  --surface: oklch(0.2 0 0);
+  --surface-2: oklch(0.24 0 0);
+  --border: oklch(0.29 0 0);
+  --border-strong: oklch(0.4 0 0);
+  --fg-muted: oklch(0.76 0 0);
+  --fg: oklch(0.97 0 0);
+  --accent: oklch(0.7 0.16 285);
+  --accent-fg: oklch(1 0 0);
+  --hairline-shadow: 0 1px 0 oklch(1 0 0 / 0.03);
+}
+
+:root {
+  --chrome-h: 3.5rem;
+  --bar-h: 4rem;
+  /* the fixed canvas every landscape slide is laid out on; --deck-scale is set by an inline script */
+  --canvas-w: 1600px;
+  --canvas-h: 900px;
+  --deck-scale: 1;
+  /* slide margins and measure, as raw vars so calc() can read them */
+  --pad: clamp(1.5rem, 6cqw, 9rem);
+  --pad-y: clamp(5rem, 11cqh, 9rem);
+  --slide-w: 84rem;
+  --measure: calc(var(--slide-w) + 2 * var(--pad));
+  --duration-fast: 200ms;
+  --duration-base: 320ms;
+  --duration-slide: 400ms;
+  --duration-slow: 520ms;
+}
+
+/* ------------------------------------------------------------------ */
+/* Theme                                                               */
+/* ------------------------------------------------------------------ */
+
+@theme inline {
+  --color-*: initial;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg: var(--fg);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  /* the accent lifted for marks drawn on top of dark product screenshots */
+  --color-accent-bright: oklch(0.76 0.14 285);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* container-relative type scale */
+  --text-display: clamp(2.25rem, 4.6cqw, 5.5rem);
+  --text-display--line-height: 1.02;
+  --text-display--letter-spacing: -0.04em;
+  --text-display--font-weight: 700;
+
+  --text-headline: clamp(1.75rem, 3.2cqw, 4rem);
+  --text-headline--line-height: 1.08;
+  --text-headline--letter-spacing: -0.035em;
+  --text-headline--font-weight: 700;
+
+  --text-statement: clamp(1.375rem, 2cqw, 2.5rem);
+  --text-statement--line-height: 1.15;
+  --text-statement--letter-spacing: -0.025em;
+  --text-statement--font-weight: 650;
+
+  --text-lead: clamp(1.125rem, 0.75rem + 0.95cqw, 1.625rem);
+  --text-lead--line-height: 1.35;
+  --text-lead--letter-spacing: -0.012em;
+
+  --text-body: clamp(1.0625rem, 0.75rem + 0.7cqw, 1.375rem);
+  --text-body--line-height: 1.5;
+  --text-body--letter-spacing: -0.005em;
+
+  --text-small: clamp(0.9375rem, 0.65rem + 0.55cqw, 1.125rem);
+  --text-small--line-height: 1.45;
+
+  --text-label: clamp(0.75rem, 0.55rem + 0.35cqw, 0.875rem);
+  --text-label--line-height: 1;
+  --text-label--letter-spacing: 0.08em;
+
+  --text-data: clamp(0.75rem, 0.55rem + 0.4cqw, 0.9375rem);
+  --text-data--line-height: 1.4;
+
+  --text-micro: clamp(0.625rem, 0.45rem + 0.3cqw, 0.75rem);
+  --text-micro--line-height: 1;
+  --text-micro--letter-spacing: 0.06em;
+
+  /* layout: generous margins, a centred measure on wide stages */
+  --container-slide: var(--slide-w);
+  --container-measure: var(--measure);
+  --spacing-pad: var(--pad);
+  --spacing-pad-y: var(--pad-y);
+  --spacing-gap: clamp(1rem, 2cqw, 2.5rem);
+  --spacing-gap-sm: clamp(0.75rem, 1cqw, 1.25rem);
+  --spacing-chrome: var(--chrome-h);
+  --spacing-bar: var(--bar-h);
+  --spacing-tap: 2.75rem;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.75rem;
+
+  --shadow-hairline: var(--hairline-shadow);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 2px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  button {
+    font: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+  }
+
+  .font-mono {
+    font-feature-settings: "tnum" 1, "zero" 1;
+  }
+}
+
+@layer components {
+  /* The overview sits outside the scaled canvas (so it stays crisp), but its content box
+     matches the slides' content width at the current scale, so both line up. */
+  .overview-measure {
+    width: calc(100% - 2 * var(--pad));
+    margin-inline: auto;
+  }
+  @media (orientation: landscape) {
+    .overview-measure {
+      width: calc(var(--slide-w) * var(--deck-scale));
+    }
+  }
+
+  /* Landscape: a 1600 x 900 canvas, centred and scaled to fit, so a slide never scrolls.
+     Portrait (phones): the canvas is the viewport and layouts restack. Pure CSS, so the
+     server and the first paint agree and nothing shifts after hydration. */
+  .deck-canvas {
+    position: absolute;
+    inset: 0;
+  }
+  @media (orientation: landscape) {
+    .deck-canvas {
+      inset: auto;
+      left: 50%;
+      top: 50%;
+      width: var(--canvas-w);
+      height: var(--canvas-h);
+      transform: translate(-50%, -50%) scale(var(--deck-scale));
+      transform-origin: center;
+    }
+  }
+}
+
+/* Onboarding connector: the line draws itself, then the arrowhead appears. */
+@keyframes connector-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes connector-head {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.connector-line {
+  stroke-dasharray: 1;
+  animation: connector-draw 520ms cubic-bezier(0.22, 1, 0.36, 1) 220ms both;
+}
+.connector-head {
+  animation: connector-head 200ms cubic-bezier(0.22, 1, 0.36, 1) 680ms both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .connector-line,
+  .connector-head {
+    animation: none;
+  }
+}
+
+@layer utilities {
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Print: one 1600 x 900 landscape page per slide                      */
+/* ------------------------------------------------------------------ */
+
+@media print {
+  @page {
+    size: 1600px 900px;
+    margin: 0;
+  }
+  html,
+  body {
+    background: white;
+  }
+  .print-page {
+    break-after: page;
+    break-inside: avoid;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
