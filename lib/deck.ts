@@ -1,6 +1,8 @@
 /** Hash <-> index. `#/7` is slide 7 (1-based) and index 6. */
 export function parseHash(hash: string, total: number): number | null {
-  const match = /^#\/?(\d{1,3})$/.exec(hash.trim());
+  const clean = hash.trim();
+  if (clean === "" || clean === "#" || clean === "#/") return 0; // the bare URL is slide 1
+  const match = /^#\/?(\d{1,3})$/.exec(clean);
   if (!match) return null;
   const n = Number(match[1]) - 1;
   if (!Number.isInteger(n) || n < 0 || n >= total) return null;
@@ -44,34 +46,4 @@ export function swipeDirection(dx: number, dy: number, dt: number): 1 | -1 | 0 {
   if (Math.abs(dx) < minDistance) return 0;
   if (Math.abs(dx) < Math.abs(dy) * 1.4) return 0;
   return dx < 0 ? 1 : -1;
-}
-
-/* ------------------------------------------------------------------ */
-/* Hash store: the URL is the source of truth for the slide index.     */
-/* ------------------------------------------------------------------ */
-
-const listeners = new Set<() => void>();
-
-export function subscribeHash(callback: () => void): () => void {
-  listeners.add(callback);
-  window.addEventListener("hashchange", callback);
-  return () => {
-    listeners.delete(callback);
-    window.removeEventListener("hashchange", callback);
-  };
-}
-
-export function readHash(): string {
-  return window.location.hash;
-}
-
-export function readServerHash(): string {
-  return "";
-}
-
-/** Replaces the hash (no history entry) and notifies subscribers. */
-export function writeHash(hash: string): void {
-  if (window.location.hash === hash) return;
-  window.history.replaceState(null, "", hash);
-  for (const listener of listeners) listener();
 }

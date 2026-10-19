@@ -58,13 +58,96 @@ export interface Mark {
   n: string;
   /** Outline on the screenshot, in percent of the image. */
   box: Highlight;
-  text: string;
+  /** Label text. A line break (\n) sets where it wraps. Leave out `text` and `label` for a numbered outline alone. */
+  text?: string;
   /**
    * Where the label sits. "above" / "below": its left edge ("start") or right edge ("end") at `x`
-   * percent of the image width. "right": at the top of the column beside the image (`x` unused).
-   * `width` caps the label's text width in ch, which decides where it wraps (default 20).
+   * percent of the image width. "right": at the top of the column beside the image. "beside": next
+   * to the image, level with the middle of its outline (`x` unused for both).
    */
-  label: { side: "above" | "below" | "right"; x: number; anchor?: "start" | "end"; width?: number };
+  label?: { side: "above" | "below" | "right" | "beside"; x: number; anchor?: "start" | "end" };
+  /** Where the number badge sits on its outline, so it doesn't cover the UI. Default "top-left". "none" hides it. */
+  badge?: "top-left" | "top-right" | "left" | "right" | "below" | "none";
+  /** The line to the outline is vertical where the label sits under it. "slanted" draws it from the label's centre instead. */
+  line?: "slanted";
+}
+
+/** An annotated screen: a real screenshot with numbered outlines, and optionally Maya's thoughts. */
+export interface AnnotatedScreen {
+  headline: string;
+  /** A second headline line, in grey. */
+  headlineMuted?: string;
+  subline?: string;
+  shot: Shot;
+  /** A pill above the screenshot, e.g. "My proposal: Friday 3 PM". */
+  pill?: string;
+  /**
+   * For tall screenshots: the image's height on landscape screens, in % of the slide height. It then
+   * keeps its own width and Maya's thoughts sit right beside it instead of at the far right.
+   */
+  shotHeight?: number;
+  /** "dark" for dark product screenshots: outlines switch to the brighter purple. Default "light". */
+  shotTone?: "light" | "dark";
+  marks: Mark[];
+  mood?: Mood;
+  bubbles?: Bubble[];
+  /** A line from one mark's outline to one of Maya's bubbles. */
+  toBubble?: { mark: string; target: number };
+  /** A purple note with a star under everything else. */
+  note?: string;
+  /** A small grey source line at the bottom of the slide. */
+  footnote?: string;
+  /**
+   * Show the screen clean first; the outlines, labels, lines and Maya's thoughts build in on the
+   * next arrow press. Walkthrough screens always build.
+   */
+  build?: boolean;
+}
+
+/** One screen of a walkthrough. */
+export type WalkStep = AnnotatedScreen;
+
+/** A task card inside a ClickUp digest email. */
+export interface DigestCard {
+  status: string;
+  /** Breadcrumb, e.g. ["Acme Co", "Social"]. The last part is bold. */
+  path: string[];
+  title?: string;
+  /** Initials of the assignee. */
+  assignee: string;
+  /** Assigned but not invited yet: the avatar is a dashed circle. */
+  pending?: boolean;
+  /** A short purple line under the title. */
+  note?: string;
+  /** Purple left border and tint. */
+  highlight?: boolean;
+  /** Red left border. */
+  overdue?: boolean;
+  /** Number of the dashed outline drawn around this card. */
+  mark?: string;
+}
+
+/** The body of a ClickUp digest email, drawn from data. */
+export interface DigestEmail {
+  stats: { label: string; value: number; alert?: boolean }[];
+  sections: {
+    title: string;
+    cards: DigestCard[];
+    cta?: { label: string; secondary?: string };
+    /** Number of the dashed outline drawn around this section's cards and button. */
+    mark?: string;
+  }[];
+  /** The email continues below the fold: cut it at the height of the email beside it. */
+  clipped?: boolean;
+}
+
+/** One side of a side-by-side email comparison. */
+export interface CompareSide {
+  pill: string;
+  inbox: { from: string; subject: string; preview?: string; time?: string; unread?: boolean; mark?: string };
+  email: DigestEmail;
+  /** Labels stacked beside the email, matched to outlines by number. */
+  labels: { n: string; text: string }[];
 }
 
 /** A proposed in-app screen, drawn from data. */
@@ -125,6 +208,8 @@ interface Base {
   title: string;
   /** One short mono line above the headline. Only when it adds something the chrome lacks. */
   eyebrow?: string;
+  /** Replaces the chapter name in the top-right counter for this slide, e.g. "Moment 1 · Setup". */
+  section?: string;
 }
 
 export type Slide = Base &
@@ -158,16 +243,9 @@ export type Slide = Base &
         points?: string[];
         win: { label: string; text: string };
       }
-    | {
-        type: "annotated";
-        headline: string;
-        shot: Shot;
-        marks: Mark[];
-        mood: Mood;
-        bubbles: Bubble[];
-        /** A line from one mark's outline to one of Maya's bubbles. */
-        toBubble?: { mark: string; target: number };
-      }
+    | ({ type: "annotated" } & AnnotatedScreen)
+    | { type: "compare"; headline: string; headlineMuted?: string; subline?: string; sides: CompareSide[] }
+    | { type: "walkthrough"; headline: string; steps: WalkStep[] }
     | { type: "screen"; headline: string; mood: Mood; bubble: Bubble; facts: Fact[]; screen: AppMockSpec; tag: string }
     | { type: "email"; headline: string; facts: Fact[]; email: EmailSpec; tag: string }
     | {
@@ -214,12 +292,6 @@ const onboardingShot = (n: number, alt: string): Shot => ({
   height: 1350,
 });
 
-const firstScreen: Shot = {
-  src: "/evidence/02-first-screen.png",
-  alt: "ClickUp home after setup: a list with Task 1, Task 2 and Task 3",
-  width: 2176,
-  height: 1046,
-};
 
 const firstScreenLight: Shot = {
   src: "/evidence/first-screen-light.png",
@@ -227,6 +299,8 @@ const firstScreenLight: Shot = {
   width: 2192,
   height: 1053,
 };
+
+const setupShot = (file: string, alt: string): Shot => ({ src: `/evidence/${file}`, alt, width: 2940, height: 1420 });
 
 const proposal = "My proposal · example data";
 
@@ -430,6 +504,7 @@ export const slides: readonly Slide[] = [
     id: "m1-problem",
     chapter: "moments",
     type: "annotated",
+    build: true,
     title: "Moment 1 · First screen",
     headline: "8 questions later: a blank project and no first step.",
     shot: firstScreenLight,
@@ -437,13 +512,13 @@ export const slides: readonly Slide[] = [
       {
         n: "1",
         box: { x: 25.19, y: 33.86, w: 71.52, h: 15.75 },
-        text: "Task 1, 2, 3. Nothing from her answers.",
-        label: { side: "below", x: 54.9, width: 14 },
+        text: "Task 1, 2, 3. Nothing\nfrom her answers.",
+        label: { side: "below", x: 54.9 },
       },
       {
         n: "2",
         box: { x: 4.43, y: 2.89, w: 17.34, h: 96.06 },
-        text: "6 ways to create something. None says “add a client.”",
+        text: "6 ways to create something.\nNone says “add a client.”",
         label: { side: "below", x: 0 },
       },
       {
@@ -458,124 +533,321 @@ export const slides: readonly Slide[] = [
     toBubble: { mark: "1", target: 1 },
   },
   {
-    id: "m1-screen",
+    id: "m1-setup",
     chapter: "moments",
-    type: "screen",
-    title: "Moment 1 · New screen",
-    eyebrow: "Moment 1 of 3 · New screen",
-    headline: "Her first screen: one task.",
-    mood: "happy",
-    bubble: { text: "My new client. Exactly what I need today." },
-    facts: [
-      { label: "Who", value: "New owners who picked Marketing." },
-      { label: "When", value: "Right after setup." },
+    type: "walkthrough",
+    title: "Moment 1 · Setup",
+    section: "Moment 1 · Setup",
+    headline: "My fix, step 1: she adds the client and her services.",
+    steps: [
+      {
+        headline: "My fix, step 1: she adds the client and her services.",
+        subline: "My proposal, for owners who pick Agency in setup.",
+        shot: setupShot("setup-1-add-the-client.png", "Proposed setup, step 1 of 3: name the client and pick the services"),
+        marks: [
+          {
+            n: "1",
+            box: { x: 36.87, y: 43.98, w: 38.13, h: 7.85 },
+            text: "Each service\nbecomes a list.",
+            label: { side: "below", x: 100, anchor: "end" },
+          },
+          {
+            n: "2",
+            box: { x: 4.8, y: 27.75, w: 15.4, h: 14.66 },
+            text: "Each client gets\nits own folder.",
+            label: { side: "below", x: 0 },
+          },
+        ],
+        mood: "neutral",
+        bubbles: [{ text: "Oh, it’s asking about my actual client." }, { text: "Social and paid ads. Easy." }],
+        toBubble: { mark: "1", target: 0 },
+      },
+      {
+        headline: "Step 2: she adds this week’s real work.",
+        shot: setupShot("setup-2-add-the-work.png", "Proposed setup, step 2 of 3: add this week's tasks under each service"),
+        marks: [
+          {
+            n: "1",
+            box: { x: 20.96, y: 58.12, w: 77.27, h: 14.92 },
+            text: "Her tasks, her dates.\nNo templates.",
+            label: { side: "below", x: 0 },
+            line: "slanted",
+          },
+          {
+            n: "2",
+            box: { x: 20.96, y: 84.55, w: 77.27, h: 9.69 },
+            text: "Or she pastes rows from her sheet.",
+            label: { side: "below", x: 100, anchor: "end" },
+          },
+        ],
+        mood: "neutral",
+        bubbles: [{ text: "What’s due this week…" }, { text: "Oh nice, I can just paste my sheet." }],
+        toBubble: { mark: "1", target: 0 },
+      },
+      {
+        headline: "Step 3: she assigns tasks without inviting anyone.",
+        shot: setupShot("setup-3-assign-owners.png", "Proposed setup, step 3 of 3: assign a teammate without sending an invite"),
+        marks: [
+          {
+            n: "1",
+            box: { x: 71.46, y: 83.51, w: 20.83, h: 16.49 },
+            text: "Assign now, invite later.\nHer team never sees a mess.",
+            label: { side: "below", x: 100, anchor: "end" },
+          },
+        ],
+        mood: "delighted",
+        bubbles: [{ text: "Wait, I can assign Sam without inviting him?" }, { text: "Good. They’ll see it once it’s ready." }],
+        toBubble: { mark: "1", target: 0 },
+      },
+      {
+        headline: "Done: her client is set up. Next, she invites the team.",
+        shot: setupShot("setup-4-done.png", "Setup done: Acme Co is set up, with an Invite Lia and Sam button"),
+        marks: [
+          {
+            n: "1",
+            box: { x: 84.72, y: 25.65, w: 12.25, h: 7.07 },
+            text: "Next: invite the team.\nEach invite is a new seat.",
+            label: { side: "right", x: 0 },
+          },
+          {
+            n: "2",
+            box: { x: 21.34, y: 23.3, w: 39.65, h: 11.52 },
+            text: "Reminders bring her back.",
+            label: { side: "below", x: 31.94 },
+          },
+        ],
+        mood: "delighted",
+        bubbles: [{ text: "Okay, Acme’s actually in one place." }, { text: "Now I’ll invite the team." }],
+        toBubble: { mark: "1", target: 1 },
+      },
     ],
-    tag: proposal,
-    screen: {
-      space: "Team Space",
-      variant: "card",
-      welcome: "Welcome, Maya.",
-      title: "Which client are we setting up first?",
-      input: "Acme Co",
-      rows: [
-        { label: "Kickoff call", meta: "Tomorrow" },
-        { label: "Collect brand assets", meta: "Thursday" },
-        { label: "First report", meta: "Friday" },
-      ],
-      primary: "Create Acme Co project",
-      secondary: "Skip",
+  },
+  {
+    id: "signup-gap",
+    chapter: "moments",
+    type: "annotated",
+    title: "Signup never asks",
+    headline: "You might be thinking: signup never asks if she’s an agency.",
+    headlineMuted: "True. And post-signup only knows what signup asks.",
+    shot: {
+      src: "/evidence/onboarding-02-options.png",
+      alt: "Signup question: What would you like to manage? Fourteen options, none of them agency",
+      width: 1837,
+      height: 536,
     },
+    shotTone: "dark",
+    marks: [
+      {
+        n: "1",
+        box: { x: 0.8, y: 27.3, w: 98.6, h: 68.2 },
+        text: "14 options.\nNone says “agency.”",
+        label: { side: "beside", x: 0 },
+      },
+    ],
+    note: "So I redesigned signup too. A bonus, outside my 3 hours. I’ll show it at the end.",
   },
   {
     id: "m1-email",
     chapter: "moments",
-    type: "email",
+    type: "compare",
     title: "Moment 1 · Email",
-    eyebrow: "Moment 1 of 3 · Email",
-    headline: "Next morning, bring her back.",
-    facts: [
-      { label: "Who", value: "Maya, if she has not come back." },
-      { label: "When", value: "8:00 the next day." },
+    headline: "Back to Maya: she gets busy and forgets to invite Sam.",
+    headlineMuted: "Next morning, email her client’s work, not ClickUp’s tutorial.",
+    subline: "",
+    sides: [
+      {
+        pill: "Today: a real ClickUp email",
+        inbox: { from: "ClickUp", subject: "Daily Summary | Yael n’s Workspace", mark: "1" },
+        email: {
+          stats: [
+            { label: "Due Today", value: 1 },
+            { label: "Tomorrow", value: 1 },
+            { label: "Overdue", value: 4, alert: true },
+          ],
+          sections: [
+            {
+              title: "Due Today",
+              cards: [
+                {
+                  status: "TO DO",
+                  path: ["Team Space", "Get Started with ClickUp"],
+                  title: "🔗 Integrate Your Favorite Tools in ClickUp",
+                  assignee: "YN",
+                  mark: "2",
+                },
+              ],
+            },
+            {
+              title: "Due Tomorrow",
+              cards: [{ status: "TO DO", path: ["Team Space", "Get Started with ClickUp"], title: "🧠 Work Smarter with ClickUp AI", assignee: "YN" }],
+            },
+            {
+              title: "Overdue",
+              cards: [{ status: "TO DO", path: ["Team Space", "Get Started with ClickUp"], assignee: "YN", overdue: true }],
+            },
+          ],
+          clipped: true,
+        },
+        labels: [
+          { n: "1", text: "“Daily Summary.” Why open it?" },
+          { n: "2", text: "All ClickUp’s tutorial. 4 overdue." },
+        ],
+      },
+      {
+        pill: "My proposal: same template, one job",
+        inbox: {
+          from: "ClickUp",
+          subject: "Sam can’t see his Acme task yet",
+          preview: "It’s due tomorrow. Plus: brand assets are due today.",
+          time: "8:00 AM",
+          unread: true,
+          mark: "3",
+        },
+        email: {
+          stats: [
+            { label: "Due Today", value: 1 },
+            { label: "Tomorrow", value: 1 },
+            { label: "Overdue", value: 0 },
+          ],
+          sections: [
+            {
+              title: "Due Today",
+              cards: [{ status: "TO DO", path: ["Acme Co", "Social"], title: "Get brand assets from Acme", assignee: "M" }],
+            },
+            {
+              title: "Due Tomorrow",
+              mark: "4",
+              cards: [
+                {
+                  status: "TO DO",
+                  path: ["Acme Co", "Paid ads"],
+                  title: "Get access to their Meta ads",
+                  assignee: "S",
+                  pending: true,
+                  note: "Sam can’t see this yet.",
+                  highlight: true,
+                },
+              ],
+              cta: { label: "Invite Sam to Acme Co", secondary: "or open Acme Co" },
+            },
+          ],
+        },
+        labels: [
+          { n: "3", text: "Her client and a deadline, in the subject." },
+          { n: "4", text: "The invite, asked the day Sam is needed." },
+        ],
+      },
     ],
-    tag: proposal,
-    email: {
-      from: "ClickUp",
-      subject: "Acme Co: your kickoff call is today",
-      body: "Hi Maya, your Acme Co project is ready.",
-      card: { title: "Kickoff call", meta: "Due today" },
-      cta: "Open the task",
-    },
   },
 
   // MOMENT 2
   {
     id: "m2-problem",
     chapter: "moments",
-    type: "problem",
-    title: "Moment 2 · Problem",
-    eyebrow: "Moment 2 of 3 · Problem",
-    headline: "She has a project. Now get her to use AI.",
-    shots: [firstScreen],
-    mood: "worried",
-    bubbles: [{ text: "So… which AI button?" }],
-    highlights: [
-      { x: 53, y: 1, w: 7.5, h: 3.6 },
-      { x: 0.6, y: 24, w: 3.6, h: 7 },
-      { x: 5, y: 30, w: 16, h: 8 },
-      { x: 76.5, y: 7, w: 6, h: 3.6 },
-      { x: 88.8, y: 7, w: 5.4, h: 3.6 },
+    type: "annotated",
+    build: true,
+    title: "Moment 2 · Five AI buttons",
+    headline: "Friday: Acme wants an update, so she starts chasing the team.",
+    headlineMuted: "Brain could write it, but none of its 5 buttons says so.",
+    shot: firstScreenLight,
+    marks: [
+      { n: "1", box: { x: 0.7, y: 24, w: 3.1, h: 8 }, badge: "left" },
+      { n: "2", box: { x: 4.8, y: 30, w: 16.6, h: 7.6 }, badge: "top-right" },
+      { n: "3", box: { x: 53.3, y: 0.8, w: 6.8, h: 3.6 }, badge: "right" },
+      { n: "4", box: { x: 76.8, y: 6.7, w: 5.4, h: 3.6 }, badge: "below" },
+      { n: "5", box: { x: 89, y: 6.7, w: 4.8, h: 3.6 }, badge: "below" },
     ],
-    points: ["AI shows up in 5 places.", "None says what it can do for her."],
-    win: { label: "The quickest win", text: "Offer the result inside her project." },
+    mood: "annoyed",
+    bubbles: [{ text: "Acme wants a status by 5. Time to ping everyone on Slack." }, { text: "Could one of these AI buttons do it? Which one?" }],
   },
   {
     id: "m2-screen",
     chapter: "moments",
-    type: "screen",
-    title: "Moment 2 · New screen",
-    eyebrow: "Moment 2 of 3 · New screen",
-    headline: "AI offers the rest of her project.",
-    mood: "happy",
-    bubble: { text: "Wait, it wrote the whole onboarding?" },
-    facts: [
-      { label: "Who", value: "Maya, with AI access and 3+ tasks." },
-      { label: "When", value: "Her second visit, no AI used yet." },
-    ],
-    tag: proposal,
-    screen: {
-      space: "Client onboarding",
-      variant: "page",
-      heading: "Acme Co",
-      rows: [
-        { label: "Kickoff call", meta: "Tomorrow" },
-        { label: "Collect brand assets", meta: "Thursday" },
-        { label: "First report", meta: "Friday" },
-      ],
-      ai: {
-        text: "AI can write the other 11 onboarding tasks, with owners and dates.",
-        primary: "Build it with AI",
-        secondary: "Not now",
+    type: "walkthrough",
+    title: "Moment 2 · AI draft",
+    section: "Moment 2 · AI draft",
+    headline: "My fix, step 1: on Friday, AI offers to write Acme’s update.",
+    steps: [
+      {
+        headline: "My fix, step 1: on Friday, AI offers to write Acme’s update.",
+        subline: "My proposal. On the free AI trial, right where she’s working.",
+        shot: setupShot("brain-1-offer.png", "Proposed banner in Acme Co: It's Friday. Want me to draft Acme's weekly update? with Free AI trial, Not now and Draft update"),
+        marks: [
+          {
+            n: "1",
+            box: { x: 22.65, y: 25.85, w: 36.07, h: 6.9 },
+            text: "Right job, right day:\nFriday, inside Acme.",
+            label: { side: "below", x: 33 },
+          },
+          {
+            n: "2",
+            box: { x: 75.81, y: 26.2, w: 20.79, h: 6.2 },
+            text: "One click, on the free AI trial.\nNo card.",
+            label: { side: "right", x: 0 },
+          },
+        ],
+        mood: "neutral",
+        bubbles: [{ text: "Oh right, Acme wants an update today." }, { text: "Sure, let’s see what it writes." }],
+        footnote: "Free plan: trial AI, 500 credits per workspace (ClickUp pricing, Oct 2026).",
       },
-    },
+      {
+        headline: "Step 2: the draft comes from her team’s real work.",
+        shot: setupShot("brain-2-draft.png", "Brain panel with Acme Co's week 1 update, based on 3 tasks and 4 comments from this week"),
+        marks: [
+          {
+            n: "1",
+            box: { x: 68.3, y: 18.45, w: 30.54, h: 3.8 },
+            text: "Built from her team’s work.\nNothing made up.",
+            label: { side: "right", x: 0 },
+          },
+          {
+            n: "2",
+            box: { x: 69.32, y: 43.16, w: 28.64, h: 7.06 },
+            text: "Flags what Acme owes her.",
+            label: { side: "below", x: 100, anchor: "end" },
+          },
+        ],
+        mood: "delighted",
+        bubbles: [{ text: "Wait, it knows Lia’s waiting on their logo?" }, { text: "That’s an hour of Slack pings, done." }],
+      },
+      {
+        headline: "Step 3: one click makes it every Friday.",
+        shot: setupShot("brain-3-every-friday.png", "Brain offers to draft Acme's update every Friday at 3 PM, with an Every Friday button"),
+        marks: [
+          {
+            n: "1",
+            box: { x: 68.3, y: 44.93, w: 30.68, h: 18.35 },
+            text: "A weekly habit, not a one-off.\nEvery new client gets it too.",
+            label: { side: "right", x: 0 },
+          },
+        ],
+        mood: "delighted",
+        bubbles: [{ text: "Every Friday? Yes, please." }, { text: "Now I want all my clients in here." }],
+      },
+    ],
   },
   {
     id: "m2-email",
     chapter: "moments",
-    type: "email",
+    type: "annotated",
+    build: true,
     title: "Moment 2 · Email",
-    eyebrow: "Moment 2 of 3 · Email",
-    headline: "Same offer, in her inbox.",
-    facts: [
-      { label: "Who", value: "Maya, if she has not tried AI." },
-      { label: "When", value: "2 days after her first project." },
-    ],
-    tag: proposal,
-    email: {
-      from: "ClickUp",
-      subject: "Acme Co has 3 tasks. AI can write the other 11.",
-      body: "One click, and the full onboarding is ready.",
-      cta: "Build it with AI",
+    headline: "Not in ClickUp on Friday? The same offer lands in her inbox.",
+    headlineMuted: "One click, and Acme’s draft is waiting.",
+    pill: "My proposal: Friday 3 PM, only if she hasn’t opened Acme",
+    shot: {
+      src: "/evidence/friday-email.png",
+      alt: "Email from ClickUp: Acme will want an update today. Brain can draft Acme's weekly update, with a Draft Acme's update button",
+      width: 1200,
+      height: 1184,
     },
+    shotHeight: 56,
+    marks: [
+      { n: "1", box: { x: 2, y: 9.46, w: 60.03, h: 6.08 }, badge: "none" },
+      { n: "2", box: { x: 28.98, y: 71.11, w: 42.05, h: 11.66 }, badge: "none" },
+    ],
+    mood: "neutral",
+    bubbles: [{ text: "Oh no, Acme’s update. I totally forgot." }, { text: "One click? Fine, do it." }],
   },
 
   // MOMENT 3
@@ -722,7 +994,11 @@ export function chapterOf(slide: Slide): Chapter {
 export function stepCount(slide: Slide): number {
   switch (slide.type) {
     case "onboarding":
+    case "walkthrough":
       return slide.steps.length;
+    case "compare":
+      // the emails alone, then each side's annotations in turn
+      return slide.sides.length + 1;
     default:
       return 1;
   }

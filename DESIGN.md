@@ -28,11 +28,12 @@ Only portrait screens (phones) use a fluid stage: layouts restack and a tall sli
 inside itself. Type, padding and breakpoints are container-relative (`cqw`, `cqh`,
 container orientation), so one component serves all of these.
 
-**State model.** `index` (0-based), `direction` (1 | -1, drives the transition), `overview`
-(boolean), `hint` (boolean, the keyboard hint). Derived: `slide`, `chapter`, `tone`,
-`canPrev`, `canNext`. The URL hash `#/7` is the public form of `index`; it is read once
-before first paint and written with `replaceState` on every change; `hashchange` is honoured
-for back / forward.
+**State model.** `index` (0-based), `direction` (1 | -1, drives the step animations), `overview`
+(boolean). Derived: `slide`, `chapter`, `tone`, `canPrev`, `canNext`. Keys, buttons, swipes and
+the overview set `index` directly; nothing waits on the URL. The URL is a mirror written after
+each move with `replaceState`: slide 1 is the bare URL, slide n is `#/n`. A hash in a shared
+link is read once when the deck mounts, and `hashchange` (back / forward, a hand-edited hash)
+is followed. The page reloads itself once if the deck has not mounted after 8 s.
 
 **Mounting.** Only `index - 1`, `index`, `index + 1` are mounted. The exit gate uses
 `useIsPresent`, never `usePresence`, so an exiting slide is actually unmounted when its exit
@@ -58,7 +59,7 @@ is inside an element marked `data-captures-keys`, except F / O / Esc which alway
 a handler through `StepsContext`; `next` / `prev` in the deck ask that handler first and only
 move to another slide when it declines, so keys, the Next button and swipes all walk through
 the steps the way Keynote walks through builds. Entering a stepped slide backwards starts on
-its last step. Thumbnails show the first step; print renders one page per step.
+its last step. Stepped slides: Onboarding (nine screens) and Walkthrough (slide 8, four screens). Thumbnails show the first step; print renders one page per step.
 
 Chapters: Intro, The customer, Onboarding, Three moments, The system, Testing, Close. All light.
 
@@ -123,6 +124,9 @@ defined under `data-tone="dark"` and can be set per chapter, but no chapter uses
 | `text-label`     | `clamp(0.6875rem, 0.5rem + 0.3cqw, 0.8125rem)` mono, caps | 13 | 13 | 11 | 11 | 0.08em | 1 |
 | `text-data`      | `clamp(0.75rem, 0.55rem + 0.4cqw, 0.9375rem)` mono | 15 | 15 | 13 | 12 | 0       | 1.4     |
 
+`text-headline-pair` (2.8cqw, about 45px at 1600) is used only for a two-sentence headline
+whose second sentence is grey, so each sentence keeps its own line in bold.
+
 Titles were brought down from a 134px display after a reading pass: the deck is read, not
 projected, so the largest line on any slide is about 88px and most headlines sit near 60px.
 Display is used for Cover, Statement and MomentIntro; headline for everything else.
@@ -153,7 +157,7 @@ and the right aspect ratio.
 Cover, Lead (accent highlight + three columns), Persona, Assumptions, Thought (Maya and one
 thought bubble, used as a chapter opener), Onboarding (stepped),
 Annotated (screenshot with numbered outlines whose labels sit above, below or beside the image,
-joined by drawn connector lines), Problem (real screenshot with callouts or highlight boxes,
+joined by drawn connector lines), Walkthrough (several annotated screens stepped on one slide), Problem (real screenshot with callouts or highlight boxes,
 Maya's bubbles, the quickest win),
 Screen (data-drawn in-app mock), Email, Journey, Flow, Table, Close.
 

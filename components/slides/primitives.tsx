@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 import Image from "next/image";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import type { Bubble, Mood } from "@/content/slides";
 import { useStage } from "@/components/deck/SlideStage";
 import { cn } from "@/lib/cn";
@@ -17,6 +17,8 @@ interface FrameProps {
   className?: string;
   /** Row template. Slides of one type share one so nothing jumps between them. */
   rows?: "single" | "top" | "mid" | "top-foot";
+  /** Less vertical margin, for slides built around a large screenshot. */
+  tight?: boolean;
 }
 
 const rowTemplates = {
@@ -32,12 +34,13 @@ const rowTemplates = {
  * shorter than the stage the rows fill it; when it is taller the slide scrolls internally.
  * Rows are never allowed to shrink below their content, so nothing can overlap.
  */
-export function Frame({ children, className, rows = "top" }: FrameProps) {
+export function Frame({ children, className, rows = "top", tight = false }: FrameProps) {
   return (
     <div className="h-full w-full overflow-y-auto overscroll-contain">
       <div
         className={cn(
-          "mx-auto grid min-h-full w-full max-w-measure gap-y-gap px-pad pb-pad-y pt-pad-y portrait:pb-[calc(var(--bar-h)+2rem)]",
+          "mx-auto grid min-h-full w-full max-w-measure gap-y-gap px-pad portrait:pb-[calc(var(--bar-h)+2rem)]",
+          tight ? "pb-pad-y-tight pt-pad-y-tight" : "pb-pad-y pt-pad-y",
           rowTemplates[rows],
           className,
         )}
@@ -58,11 +61,21 @@ interface StaggerProps {
   as?: "div" | "ul" | "ol" | "dl" | "section";
 }
 
+/**
+ * The first slide of a page load renders visible, straight from the server, so the page is never
+ * blank even if scripts fail. Slides mounted after the deck has hydrated play the entrance stagger.
+ */
+let deckHydrated = false;
+export function markDeckHydrated(): void {
+  deckHydrated = true;
+}
+
 export function Stagger({ children, className, as = "div" }: StaggerProps) {
   const { mode } = useStage();
   const Tag = motion[as];
+  const [animateIn] = useState(() => mode === "deck" && deckHydrated);
   return (
-    <Tag className={className} variants={staggerContainer} initial={mode === "deck" ? "hidden" : false} animate="show">
+    <Tag className={className} variants={staggerContainer} initial={animateIn ? "hidden" : false} animate="show">
       {children}
     </Tag>
   );
@@ -195,6 +208,20 @@ export function WinCard({ label, text, className }: { label: string; text: strin
       <p className="text-small font-medium text-accent">{label}</p>
       <p className="text-lead text-fg">{text}</p>
     </div>
+  );
+}
+
+/** A numbered purple badge, matched between an outline and its label. */
+export function NumberBadge({ n, ring = false }: { n: string; ring?: boolean }) {
+  return (
+    <span
+      className={cn(
+        "grid size-[max(1.5rem,1.75cqw)] shrink-0 place-items-center rounded-full bg-accent text-small font-semibold text-accent-fg",
+        ring && "ring-2 ring-bg",
+      )}
+    >
+      {n}
+    </span>
   );
 }
 

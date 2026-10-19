@@ -18,6 +18,8 @@ interface ChromeProps {
   index: number;
   total: number;
   chapter: Chapter;
+  /** Replaces the chapter name for this slide, e.g. "Moment 1 · Setup". */
+  section?: string;
   /** Step inside the current slide, e.g. "2 of 8". */
   step?: string;
   onOverview: () => void;
@@ -28,7 +30,7 @@ interface ChromeProps {
  * The only chrome: a progress bar along the top edge, split into chapters so position is
  * visible without words, and one small line top-right (chapter · counter) that opens the overview.
  */
-export function Chrome({ index, total, chapter, step, onOverview, counterRef }: ChromeProps) {
+export function Chrome({ index, total, chapter, section, step, onOverview, counterRef }: ChromeProps) {
   return (
     <>
       <div aria-hidden="true" className="absolute inset-x-0 top-0 z-30 flex h-0.5 gap-1.5">
@@ -50,7 +52,7 @@ export function Chrome({ index, total, chapter, step, onOverview, counterRef }: 
           className="pointer-events-auto -mr-3 flex min-h-tap shrink-0 items-center gap-2 rounded-sm px-3 font-mono text-label uppercase text-fg-muted transition-colors duration-(--duration-fast) ease-out hover:text-fg"
         >
           <span className="sr-only">Open overview. </span>
-          <span className="hidden @md:inline">{chapter.title}</span>
+          <span className="hidden @md:inline">{section ?? chapter.title}</span>
           <span aria-hidden="true" className="hidden @md:inline">
             ·
           </span>

@@ -1,0 +1,78 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:600px;height:592px;overflow:hidden;background:#fff}
+body{font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:#1f1f1f;-webkit-font-smoothing:antialiased;position:relative}
+svg{display:block;flex:none}
+.ic{width:17px;height:17px;stroke:#5f6368;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.row{display:flex;align-items:center}
+.bar{position:absolute;left:0;right:0;top:0;height:46px;border-bottom:1px solid #ececec;padding:0 18px;gap:20px}
+.bar .r{margin-left:auto;gap:16px;color:#5f6368;font-size:12.5px}
+.subject{position:absolute;left:18px;top:62px;gap:10px}
+.subject b{font-size:20px;font-weight:500;color:#1f1f1f;letter-spacing:-.01em}
+.chip{background:#ececec;color:#555;font-size:11px;border-radius:4px;padding:2px 6px}
+.from{position:absolute;left:18px;right:18px;top:106px;gap:12px}
+.logo{width:36px;height:36px;border-radius:50%;border:1px solid #e6e6e6;display:grid;place-items:center;background:#fff}
+.who b{display:block;font-size:13.5px;font-weight:600}
+.who small{display:block;font-size:11.5px;color:#6b6b6b;margin-top:1px}
+.from .r{margin-left:auto;gap:14px;color:#5f6368;font-size:12.5px}
+.body{position:absolute;left:18px;right:18px;top:160px;bottom:22px;background:#f6f6f7;border-radius:12px;border:1px solid #ededee;overflow:hidden}
+.glow{position:absolute;left:50%;top:-80px;width:360px;height:140px;transform:translateX(-50%);background:radial-gradient(closest-side,rgba(123,104,238,.16),rgba(123,104,238,0));}
+.card{position:absolute;left:58px;right:58px;top:36px;background:#fff;border:1px solid #e6e6e6;border-radius:10px}
+.ch{gap:9px;padding:14px 16px;border-bottom:1px solid #eeeeee;font-size:13.5px}
+.ch span{color:#6b6b6b}.ch b{font-weight:600}
+.task{gap:11px;padding:11px 16px;border-bottom:1px solid #f0f0f0}
+.task:last-child{border-bottom:0}
+.task .t b{display:block;font-size:13px;font-weight:600}
+.task .t small{display:block;font-size:11px;color:#8a8a8a;margin-top:2px}
+.task .r{margin-left:auto;gap:8px;font-size:11.5px;color:#6b6b6b}
+.av{width:20px;height:20px;border-radius:50%;color:#fff;font-size:10px;font-weight:600;display:grid;place-items:center}
+.cta{position:absolute;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:7px}
+.btn{height:36px;padding:0 54px;border-radius:7px;background:#5b47e0;color:#fff;font-size:13.5px;font-weight:600;display:flex;align-items:center}
+.cta small{font-size:11px;color:#7a7a7a}
+.foot{position:absolute;left:24px;right:24px;bottom:18px;color:#6b6b6b;font-size:11.5px}
+.foot b{font-weight:600;color:#555;display:flex;gap:5px;align-items:center}
+.foot span{margin-left:auto}
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="back" viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></symbol>
+<symbol id="arch" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M10 13h4"/></symbol>
+<symbol id="trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></symbol>
+<symbol id="mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+<symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+<symbol id="lt" viewBox="0 0 24 24"><path d="m15 6-6 6 6 6"/></symbol>
+<symbol id="gt" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+<symbol id="star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></symbol>
+<symbol id="reply" viewBox="0 0 24 24"><path d="M10 7 4 12l6 5M4 12h11a5 5 0 0 1 5 5v1"/></symbol>
+<symbol id="more" viewBox="0 0 24 24"><g fill="#5f6368" stroke="none"><circle cx="12" cy="5" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="12" cy="19" r="1.7"/></g></symbol>
+<linearGradient id="cuTop" x1="8" y1="0" x2="40" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ff02f0"/><stop offset="1" stop-color="#ffc800"/></linearGradient>
+<linearGradient id="cuBot" x1="8" y1="0" x2="40" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#8930fd"/><stop offset="1" stop-color="#49ccf9"/></linearGradient>
+<symbol id="cu" viewBox="0 0 48 48"><path d="M11 23 L24 12 L37 23" fill="none" stroke="url(#cuTop)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 31 Q24 44 37 31" fill="none" stroke="url(#cuBot)" stroke-width="6.5" stroke-linecap="round"/></symbol>
+<symbol id="cugray" viewBox="0 0 48 48"><path d="M11 23 L24 12 L37 23" fill="none" stroke="#8a8a8a" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 31 Q24 44 37 31" fill="none" stroke="#8a8a8a" stroke-width="6.5" stroke-linecap="round"/></symbol>
+</defs></svg>
+<div class="bar row">
+  <svg class="ic"><use href="#back"/></svg><svg class="ic"><use href="#arch"/></svg><svg class="ic"><use href="#trash"/></svg><svg class="ic"><use href="#mail"/></svg><svg class="ic"><use href="#clock"/></svg>
+  <div class="r row">1 of 24 <svg class="ic"><use href="#lt"/></svg><svg class="ic"><use href="#gt"/></svg></div>
+</div>
+<div class="subject row" id="m-subject"><b>Acme will want an update today</b><span class="chip">Inbox</span></div>
+<div class="from row">
+  <div class="logo"><svg width="22" height="22"><use href="#cu"/></svg></div>
+  <div class="who"><b>ClickUp</b><small>to me</small></div>
+  <div class="r row">3:00 PM <svg class="ic"><use href="#star"/></svg><svg class="ic"><use href="#reply"/></svg><svg class="ic"><use href="#more"/></svg></div>
+</div>
+<div class="body">
+  <div class="glow"></div>
+  <div class="card">
+    <div class="ch row"><svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="6.5" r="4.5" fill="#f55aa8"/><circle cx="17.5" cy="12" r="4.5" fill="#7b68ee"/><circle cx="12" cy="17.5" r="4.5" fill="#4aa8ff"/><circle cx="6.5" cy="12" r="4.5" fill="#ffb03a"/></svg><div><span>Brain</span> <b>can draft Acme’s weekly update</b></div></div>
+    <div class="task row"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="#2fae5f"/><path d="m4.8 8.2 2.2 2.2 4.2-4.6" stroke="#fff" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="t"><b>Get access to their Meta ads</b><small>Acme Co / Paid ads</small></div><div class="r row">Done <span class="av" style="background:#3a8fdb">S</span></div></div>
+    <div class="task row"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="#2fae5f"/><path d="m4.8 8.2 2.2 2.2 4.2-4.6" stroke="#fff" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="t"><b>Get brand assets from Acme</b><small>Acme Co / Social</small></div><div class="r row">Done <span class="av" style="background:#1f1f1f">M</span></div></div>
+    <div class="task row"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.4" fill="none" stroke="#4a7ff0" stroke-width="1.5"/><path d="M8 3.2a4.8 4.8 0 0 1 0 9.6z" fill="#4a7ff0"/></svg><div class="t"><b>First week of posts</b><small>Acme Co / Social</small></div><div class="r row">Due today <span class="av" style="background:#dd7a2b">L</span></div></div>
+  </div>
+  <div class="cta" id="m-cta" style="top:266px"><span class="btn">Draft Acme’s update</span><small>Included in your free AI trial</small></div>
+  <div class="foot row"><b><svg width="15" height="15"><use href="#cugray"/></svg>ClickUp</b><span>Manage email notifications</span></div>
+</div>
+</body></html>

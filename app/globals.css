@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Browser profiles can contain sockets; they are not application source. */
+@source not "../undefined";
+
 /* Container-orientation variants: a slide restacks when its own stage is portrait. */
 @custom-variant portrait {
   @container (orientation: portrait) {
@@ -90,6 +93,8 @@
   --color-fg: var(--fg);
   --color-accent: var(--accent);
   --color-accent-fg: var(--accent-fg);
+  /* overdue counts inside product mocks */
+  --color-alert: oklch(0.6 0.2 32);
   /* the accent lifted for marks drawn on top of dark product screenshots */
   --color-accent-bright: oklch(0.76 0.14 285);
 
@@ -106,6 +111,12 @@
   --text-headline--line-height: 1.08;
   --text-headline--letter-spacing: -0.035em;
   --text-headline--font-weight: 700;
+
+  /* a two-sentence headline (statement + grey second line) that must keep each sentence on one line */
+  --text-headline-pair: clamp(1.625rem, 2.8cqw, 3.5rem);
+  --text-headline-pair--line-height: 1.1;
+  --text-headline-pair--letter-spacing: -0.03em;
+  --text-headline-pair--font-weight: 700;
 
   --text-statement: clamp(1.375rem, 2cqw, 2.5rem);
   --text-statement--line-height: 1.15;
@@ -134,11 +145,16 @@
   --text-micro--line-height: 1;
   --text-micro--letter-spacing: 0.06em;
 
+  /* fine print inside product mocks (email counts) */
+  --text-nano: clamp(0.5625rem, 0.4rem + 0.3cqw, 0.6875rem);
+
   /* layout: generous margins, a centred measure on wide stages */
   --container-slide: var(--slide-w);
   --container-measure: var(--measure);
   --spacing-pad: var(--pad);
   --spacing-pad-y: var(--pad-y);
+  /* slides built around a large screenshot trade a little vertical margin for a bigger image */
+  --spacing-pad-y-tight: clamp(4.25rem, 9cqh, 7rem);
   --spacing-gap: clamp(1rem, 2cqw, 2.5rem);
   --spacing-gap-sm: clamp(0.75rem, 1cqw, 1.25rem);
   --spacing-chrome: var(--chrome-h);
@@ -295,17 +311,3 @@
     -webkit-print-color-adjust: exact;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

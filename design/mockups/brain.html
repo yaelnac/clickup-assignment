@@ -1,0 +1,225 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1470px;height:710px;overflow:hidden}
+body{font-family:Inter,ui-sans-serif,system-ui,sans-serif;background:#fafafa;color:#1f1f1f;font-size:14px;-webkit-font-smoothing:antialiased;position:relative}
+svg{display:block;flex:none}
+.ic{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.row{display:flex;align-items:center}
+/* top bar */
+.top{position:absolute;left:0;right:0;top:0;height:38px}
+.ws{position:absolute;left:6px;top:6px;height:27px;padding:0 10px 0 5px;border-radius:7px;background:#efefef;gap:8px;font-weight:600;font-size:14px}
+.ws .h{width:18px;height:18px;border-radius:4px;background:#3f9e8f;color:#fff;font-size:12px;display:grid;place-items:center;font-weight:600}
+.search{position:absolute;left:588px;top:5px;width:296px;height:28px;border:1px solid #e3e3e3;border-radius:8px;background:#fff;gap:6px;padding:0 4px 0 10px;color:#8a8a8a;font-size:13px}
+.search .chip{margin-left:auto;background:#f0f0f0;border-radius:6px;height:20px;padding:0 6px;gap:4px;color:#555;font-size:12px}
+.avatar{position:absolute;right:8px;top:7px;width:24px;height:24px;border-radius:50%;background:#1f1f1f;color:#fff;font-size:11px;font-weight:600;display:grid;place-items:center}
+/* rail */
+.rail{position:absolute;left:6px;top:38px;bottom:0;width:48px;background:#000;border-radius:10px 10px 0 0;color:#fff}
+.ri{position:absolute;left:0;width:48px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px}
+.ri .ic{width:17px;height:17px}
+.home{width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 40% 30%,#c66bf2,#7c4dff 70%);display:grid;place-items:center;box-shadow:0 0 12px rgba(160,90,255,.5)}
+/* app card */
+.app{position:absolute;left:60px;top:38px;right:6px;bottom:0;background:#fff;border:1px solid #e6e6e6;border-bottom:0;border-radius:10px 10px 0 0;overflow:hidden}
+.side{position:absolute;left:0;top:0;bottom:0;width:236px;background:#f9f9f9;border-right:1px solid #e8e8e8}
+.side .hd{position:absolute;left:16px;top:16px;font-size:16px;font-weight:600}
+.create{position:absolute;left:148px;top:12px;height:25px;padding:0 9px;border-radius:6px;background:#1f1f1f;color:#fff;gap:5px;font-size:13px;font-weight:500}
+.create .ic{width:13px;height:13px}
+.si{position:absolute;left:16px;gap:9px;color:#646464;font-size:14px}
+.si .ic{width:15px;height:15px}
+.div{position:absolute;left:16px;right:18px;height:1px;background:#e3e3e3}
+.lab{position:absolute;left:16px;font-size:12px;color:#7a7a7a}
+.sq{width:16px;height:16px;border-radius:4px;display:grid;place-items:center;color:#fff}
+.sq .ic{width:11px;height:11px}
+.sel{position:absolute;left:31px;width:197px;height:28px;border-radius:6px;background:#efedfb}
+.tree{position:absolute;width:1px;background:#e0e0e0}
+/* main */
+.main{position:absolute;left:236px;top:0;right:0;bottom:0}
+.crumb{position:absolute;left:17px;top:16px;gap:8px;font-size:14px;color:#6a6a6a}
+.crumb b{color:#1f1f1f;font-weight:600;font-size:14.5px}
+.tr{position:absolute;right:18px;top:15px;gap:16px;color:#646464;font-size:13.5px}
+.tr span{display:flex;gap:6px;align-items:center}
+.tabs{position:absolute;left:17px;top:52px;gap:16px;font-size:13.5px;color:#555}
+.tabs span{display:flex;gap:6px;align-items:center;height:28px}
+.tabs .on{color:#1f1f1f;font-weight:600;box-shadow:inset 0 -2px 0 #1f1f1f}
+.tab-ic{width:15px;height:15px;border-radius:3px;display:grid;place-items:center;color:#fff;font-size:8px;font-weight:700}
+.rule{position:absolute;left:0;right:0;top:80px;height:1px;background:#e8e8e8}
+.tool{position:absolute;left:14px;top:92px;gap:6px}
+.chip2{height:26px;border-radius:13px;border:1px solid #e3e3e3;padding:0 10px;gap:5px;font-size:12.5px;color:#4a4a4a;display:flex;align-items:center}
+.chip2.lav{background:#f0f1fe;border-color:#dcdcfb;color:#5146d9}
+.chip2 .ic{width:13px;height:13px}
+.toolr{position:absolute;right:18px;top:92px;gap:6px}
+.addt{height:26px;border-radius:6px;background:#1f1f1f;color:#fff;font-size:12.5px;font-weight:500;display:flex;align-items:center}
+.addt span{padding:0 10px}
+.addt i{width:24px;height:26px;border-left:1px solid #444;display:grid;place-items:center}
+/* banner */
+.banner{position:absolute;left:22px;right:30px;top:137px;height:64px;border:1px solid #dcd8fb;background:#f6f4ff;border-radius:12px;gap:14px;padding:0 18px 0 20px}
+.brainlogo{width:16px;height:16px}
+.banner .brainlogo{width:26px;height:26px}
+.btxt b{display:block;font-size:15px;font-weight:600;color:#1f1f1f}
+.btxt small{display:block;font-size:13px;color:#6a6a6a;margin-top:2px}
+.bact{margin-left:auto;gap:16px;font-size:13.5px}
+.trial{background:#e6f6ec;color:#1f8a4c;border-radius:4px;padding:3px 7px;font-size:12px;font-weight:500}
+.notnow{color:#6a6a6a}
+.draft{height:32px;padding:0 14px;border-radius:7px;background:#7b68ee;color:#fff;font-weight:600;gap:7px;display:flex;align-items:center}
+.draft .ic{width:13px;height:13px}
+/* table */
+.th{position:absolute;left:22px;right:28px;height:28px;border-bottom:1px solid #ececec;font-size:12px;color:#8a8a8a}
+.th .n{position:absolute;left:26px;top:7px}
+.th .a{position:absolute;left:745px;top:7px}
+.th .d{position:absolute;left:975px;top:7px}
+.grp{position:absolute;left:22px;gap:8px;font-size:13.5px;font-weight:600}
+.grp em{font-style:normal;font-weight:400;color:#8a8a8a}
+.grp .ic{width:14px;height:14px;color:#555}
+.task{position:absolute;left:22px;right:28px;height:42px;border-bottom:1px solid #efefef;font-size:13.5px}
+.task .t{position:absolute;left:28px;top:12px;gap:9px;display:flex;align-items:center}
+.task .c{display:flex;gap:3px;align-items:center;color:#8a8a8a;font-size:11.5px;margin-left:4px}
+.task .c .ic{width:12px;height:12px}
+.badge{font-size:11px;border-radius:4px;padding:2px 6px;font-weight:500}
+.ok{background:#e6f6ec;color:#1f8a4c}.ip{background:#e8f0fe;color:#3b6fd8}
+.as{position:absolute;left:745px;top:10px;gap:8px;display:flex;align-items:center}
+.av{width:22px;height:22px;border-radius:50%;color:#fff;font-size:10.5px;font-weight:600;display:grid;place-items:center}
+.du{position:absolute;left:975px;top:12px}
+.addtask{position:absolute;left:48px;gap:8px;color:#8a8a8a;font-size:13.5px}
+/* brain panel */
+.panel{position:absolute;right:0;top:0;bottom:0;width:470px;background:#fff;border-left:1px solid #e6e6e6;box-shadow:-8px 0 24px rgba(0,0,0,.04)}
+.ph{position:absolute;left:16px;right:14px;top:12px;height:24px;gap:8px;font-size:13.5px;font-weight:600}
+.ph .r{margin-left:auto;gap:12px;color:#8a8a8a;display:flex}
+.umsg{position:absolute;right:16px;top:54px;background:#f2f2f2;border-radius:10px;padding:8px 12px;font-size:13px}
+.src{position:absolute;left:16px;right:16px;top:98px;gap:6px;color:#8a8a8a;font-size:12px}
+.src .ic{width:12px;height:12px}
+.card{position:absolute;left:16px;right:14px;top:120px;border:1px solid #e8e8e8;border-radius:10px;padding:12px 14px}
+.card h4{font-size:14.5px;font-weight:600;margin-bottom:8px}
+.card .sec{font-size:12.5px;color:#6a6a6a;font-weight:500;margin-top:9px}
+.card ul{margin:3px 0 0 17px;font-size:13px;line-height:1.55;color:#2a2a2a}
+.muted .card h4,.muted .card ul{color:#9a9a9a}
+.acts{position:absolute;left:16px;right:14px;gap:14px;color:#6a6a6a;font-size:11.5px}
+.acts span{display:flex;gap:4px;align-items:center}
+.acts .ic{width:12px;height:12px}
+.acts .r{margin-left:auto;gap:8px;display:flex}
+.input{position:absolute;left:16px;right:14px;bottom:14px;height:34px;border:1px solid #e3e3e3;border-radius:9px;gap:7px;padding:0 10px;color:#9a9a9a;font-size:12.5px}
+.input .ic{width:13px;height:13px}
+.every{position:absolute;left:16px;right:14px;border:1px solid #dcd8fb;background:#f6f4ff;border-radius:10px;padding:12px 14px}
+.every b{display:block;font-size:14px;font-weight:600}
+.every small{display:block;font-size:12.5px;color:#6a6a6a;margin-top:3px;line-height:1.45}
+.every .btns{margin-top:10px;gap:10px;font-size:12px}
+.every .go{height:26px;padding:0 10px;border-radius:6px;background:#7b68ee;color:#fff;font-weight:600;gap:6px;display:flex;align-items:center}
+.every .go .ic{width:13px;height:13px}
+.another{position:absolute;left:16px;gap:6px;color:#6a6a6a;font-size:11.5px}
+.another .ic{width:12px;height:12px}
+.toast{position:absolute;left:560px;top:658px;transform:translateX(-50%);background:#1f1f1f;color:#fff;border-radius:7px;padding:7px 12px;gap:7px;font-size:12px}
+.toast .ic{width:12px;height:12px;color:#7fe0a3}
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+<symbol id="cal" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 3v3M16 3v3"/></symbol>
+<symbol id="spark" viewBox="0 0 24 24"><path d="M12 3c.6 4.3 1.7 5.4 6 6-4.3.6-5.4 1.7-6 6-.6-4.3-1.7-5.4-6-6 4.3-.6 5.4-1.7 6-6z"/></symbol>
+<symbol id="users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.6a3.5 3.5 0 0 1 0 6.8M18.5 14.2A6.5 6.5 0 0 1 21.5 20"/></symbol>
+<symbol id="grid" viewBox="0 0 24 24"><g fill="currentColor" stroke="none"><circle cx="5" cy="5" r="1.8"/><circle cx="12" cy="5" r="1.8"/><circle cx="19" cy="5" r="1.8"/><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/><circle cx="5" cy="19" r="1.8"/><circle cx="12" cy="19" r="1.8"/><circle cx="19" cy="19" r="1.8"/></g></symbol>
+<symbol id="uplus" viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2.5 21a6.5 6.5 0 0 1 13 0M19 8v6M16 11h6"/></symbol>
+<symbol id="inbox" viewBox="0 0 24 24"><path d="M3 13h5l1.5 3h5L16 13h5M5 5h14l2 8v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6z"/></symbol>
+<symbol id="ucheck" viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2.5 21a6.5 6.5 0 0 1 10-5.5M15 18l2 2 4-4"/></symbol>
+<symbol id="plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="brief" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2M3 12h18"/></symbol>
+<symbol id="folder" viewBox="0 0 24 24"><path d="M3 6.5A1.5 1.5 0 0 1 4.5 5H9l2 2h8.5A1.5 1.5 0 0 1 21 8.5V18a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18z"/></symbol>
+<symbol id="lchk" viewBox="0 0 24 24"><path d="m3 6 1.5 1.5L7 5M3 12l1.5 1.5L7 11M3 18l1.5 1.5L7 17M11 6h10M11 12h10M11 18h10"/></symbol>
+<symbol id="hash" viewBox="0 0 24 24"><path d="M5 9h15M4 15h15M10 3 8 21M16 3l-2 18"/></symbol>
+<symbol id="star" viewBox="0 0 24 24"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></symbol>
+<symbol id="bot" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4M9 13h.01M15 13h.01"/></symbol>
+<symbol id="list" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></symbol>
+<symbol id="layers" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5zM3 13l9 5 9-5"/></symbol>
+<symbol id="cols" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M15 4v16"/></symbol>
+<symbol id="filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol>
+<symbol id="chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+<symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+<symbol id="msg" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+<symbol id="hist" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2"/></symbol>
+<symbol id="x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></symbol>
+<symbol id="doc" viewBox="0 0 24 24"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></symbol>
+<symbol id="retry" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/></symbol>
+<symbol id="up" viewBox="0 0 24 24"><path d="M7 10v11H4V10zM7 10l4-7a2 2 0 0 1 2 2v4h6a2 2 0 0 1 2 2.3l-1.3 7A2 2 0 0 1 17.7 20H7"/></symbol>
+<symbol id="down" viewBox="0 0 24 24"><path d="M17 14V3h3v11zM17 14l-4 7a2 2 0 0 1-2-2v-4H5a2 2 0 0 1-2-2.3l1.3-7A2 2 0 0 1 6.3 4H17"/></symbol>
+<symbol id="repeat" viewBox="0 0 24 24"><path d="m17 2 4 4-4 4M3 11v-1a4 4 0 0 1 4-4h14M7 22l-4-4 4-4M21 13v1a4 4 0 0 1-4 4H3"/></symbol>
+<symbol id="check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
+</defs></svg>
+<script>
+const ic=(id,cls='ic')=>`<svg class="${cls}"><use href="#${id}"/></svg>`;
+const brain=`<svg class="brainlogo" viewBox="0 0 24 24"><circle cx="12" cy="6.5" r="4.5" fill="#f55aa8"/><circle cx="17.5" cy="12" r="4.5" fill="#7b68ee"/><circle cx="12" cy="17.5" r="4.5" fill="#4aa8ff"/><circle cx="6.5" cy="12" r="4.5" fill="#ffb03a"/></svg>`;
+const state=Number(location.hash.slice(1)||1);
+const done=`<svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="#2fae5f"/><path d="m4.8 8.2 2.2 2.2 4.2-4.6" stroke="#fff" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const prog=`<svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.4" fill="none" stroke="#4a7ff0" stroke-width="1.5"/><path d="M8 3.2a4.8 4.8 0 0 1 0 9.6z" fill="#4a7ff0"/></svg>`;
+document.body.insertAdjacentHTML('beforeend',`
+<div class="top">
+ <div class="ws row"><span class="h">H</span>Harbor Studio ${ic('chev')}</div>
+ <div class="search row">${ic('search')}Search <span style="font-size:11px">⌘K</span><span class="chip row">AI Chats <span style="display:inline-block;width:12px;height:12px">${brain.replace('brainlogo','" style="width:12px;height:12px')}</span></span></div>
+ <div class="avatar">M</div>
+</div>
+<div class="rail">
+ <div class="ri" style="top:12px"><div class="home">${ic('home')}</div>Home</div>
+ <div class="ri" style="top:64px">${ic('cal')}Planner</div>
+ <div class="ri" style="top:117px">${ic('spark')}AI</div>
+ <div class="ri" style="top:170px">${ic('users')}Teams</div>
+ <div class="ri" style="top:222px">${ic('grid')}More</div>
+ <div class="ri" style="bottom:12px">${ic('uplus')}Invite</div>
+</div>
+<div class="app">
+ <div class="side">
+  <div class="hd">Home</div>
+  <div class="create row">${ic('plus')}Create</div>
+  <div class="si row" style="top:51px">${ic('inbox')}Inbox</div>
+  <div class="si row" style="top:79px">${ic('ucheck')}My Tasks</div>
+  <div class="div" style="top:109px"></div>
+  <div class="lab" style="top:122px">Spaces</div><div style="position:absolute;right:20px;top:120px;color:#8a8a8a">${ic('plus')}</div>
+  <div class="si row" style="top:148px;color:#1f1f1f"><span class="sq" style="background:#5d4adf">${ic('brief')}</span>Clients</div>
+  <div class="tree" style="left:24px;top:167px;height:96px"></div>
+  <div class="sel" style="top:171px"></div>
+  <div class="si row" style="top:177px;left:39px;color:#1f1f1f">${ic('folder')}Acme Co</div>
+  <div class="tree" style="left:44px;top:199px;height:56px"></div>
+  <div class="si row" style="top:205px;left:59px">${ic('lchk')}Social</div>
+  <div class="si row" style="top:233px;left:59px">${ic('lchk')}Paid ads</div>
+  <div class="si row" style="top:261px;left:39px;color:#9a9a9a">${ic('plus')}New client</div>
+  <div class="div" style="top:292px"></div>
+  <div class="lab" style="top:304px">Channels</div>
+  <div class="si row" style="top:332px">${ic('hash')}General</div>
+ </div>
+ <div class="main">
+  <div class="crumb row"><span class="sq" style="background:#5d4adf">${ic('brief')}</span>Clients <span style="color:#bbb">/</span> ${ic('folder')} <b>Acme Co</b> ${ic('star')}</div>
+  <div class="tr row"><span>${ic('bot')}Automate</span><span>${ic('uplus')}Share</span></div>
+  <div class="tabs row"><span class="on"><i class="tab-ic" style="background:#555">${ic('list').replace('class="ic"','class="ic" style="width:10px;height:10px"')}</i>List</span><span><i class="tab-ic" style="background:#4f63e8">${ic('cols').replace('class="ic"','class="ic" style="width:10px;height:10px"')}</i>Board</span><span><i class="tab-ic" style="background:#ea6a2a">31</i>Calendar</span><span style="width:1px;height:18px;background:#e0e0e0"></span><span>${ic('plus')}View</span></div>
+  <div class="rule"></div>
+  <div class="tool row"><span class="chip2 lav">${ic('layers')}Group: Status</span><span class="chip2">${ic('cols')}Columns</span></div>
+  <div class="toolr row"><span class="chip2">${ic('filter')}Filter</span><span class="chip2">${ic('users')}Assignee</span><span class="addt"><span>Add Task</span><i>${ic('chev')}</i></span></div>
+  ${state===1?`<div class="banner row">${brain}<div class="btxt" id="m-text"><b>It’s Friday. Want me to draft Acme’s weekly update?</b><small>Built from your team’s work this week, ready to paste into your email to Acme.</small></div><div class="bact row" id="m-actions"><span class="trial">Free AI trial</span><span class="notnow">Not now</span><span class="draft">${ic('spark')}Draft update</span></div></div>`:''}
+  <div class="th" style="top:${state===1?227:126}px"><span class="n">Name</span><span class="a">Assignee</span><span class="d">Due date</span></div>
+  ${(()=>{const y=state===1?276:175;return `
+  <div class="grp row" style="top:${y}px">${ic('lchk')}Social <em>2</em></div>
+  <div class="task" style="top:${y+27}px"><div class="t">${done}<span>Get brand assets from Acme</span><span class="c">${ic('msg')}1</span><span class="badge ok">Complete</span></div><div class="as"><span class="av" style="background:#1f1f1f">M</span>Maya</div><div class="du">Tue</div></div>
+  <div class="task" style="top:${y+69}px"><div class="t">${prog}<span>First week of posts</span><span class="c">${ic('msg')}2</span><span class="badge ip">In progress</span></div><div class="as"><span class="av" style="background:#dd7a2b">L</span>Lia</div><div class="du">Fri</div></div>
+  <div class="grp row" style="top:${y+132}px">${ic('lchk')}Paid ads <em>1</em></div>
+  <div class="task" style="top:${y+159}px"><div class="t">${done}<span>Get access to their Meta ads</span><span class="c">${ic('msg')}1</span><span class="badge ok">Complete</span></div><div class="as"><span class="av" style="background:#3a8fdb">S</span>Sam</div><div class="du">Wed</div></div>
+  <div class="addtask row" style="top:${y+211}px">${ic('plus')}Add Task</div>`})()}
+  ${state>=2?`<div class="panel ${state===3?'muted':''}">
+   <div class="ph row">${brain}Brain<div class="r">${ic('hist')}${ic('x')}</div></div>
+   <div class="umsg">Draft Acme’s weekly update</div>
+   ${state===2?`<div class="src row" id="m-source">${ic('lchk')}Based on 3 tasks and 4 comments from this week</div>`:''}
+   <div class="card" style="top:${state===2?120:96}px">
+     <h4>Acme Co: week 1 update</h4>
+     <div class="sec">Done</div><ul><li>Meta ads access is set up (Sam)</li><li>Brand assets received (Maya)</li></ul>
+     <div class="sec">In progress</div><ul><li>First week of posts: 3 of 5 drafted (Lia), due today</li></ul>
+     ${state===2?`<div id="m-need"><div class="sec">Need from Acme</div><ul><li>Logo files, so Lia can finish the posts</li></ul></div>`:''}
+   </div>
+   ${state===2?`<div class="acts row" style="top:334px"><span>${ic('copy')}Copy</span><span>${ic('doc')}Create Doc</span><span>${ic('retry')}Retry</span><div class="r">${ic('up')}${ic('down')}</div></div>`:''}
+   ${state===3?`<div class="every" id="m-every" style="top:286px"><b>Want this every Friday?</b><small>I’ll draft Acme’s update every Friday at 3 PM and ping you to review it.</small><div class="btns row"><span class="go">${ic('repeat')}Every Friday</span><span style="color:#6a6a6a">Not now</span></div></div>
+   <div class="another row" style="top:420px">${ic('plus')}Set up another client to get theirs too</div>`:''}
+   <div class="input row">${ic('spark')}Tell Brain what to change</div>
+  </div>`:''}
+ </div>
+</div>
+${state===3?`<div class="toast row">${ic('check')}Copied. Paste it into your email to Acme.</div>`:''}
+`);
+</script>
+</body></html>

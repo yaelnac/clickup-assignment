@@ -3,6 +3,7 @@
 import { Annotated } from "@/components/slides/Annotated";
 import { Assumptions } from "@/components/slides/Assumptions";
 import { Close } from "@/components/slides/Close";
+import { Compare } from "@/components/slides/Compare";
 import { Cover } from "@/components/slides/Cover";
 import { Email } from "@/components/slides/Email";
 import { Flow } from "@/components/slides/Flow";
@@ -14,6 +15,7 @@ import { Problem } from "@/components/slides/Problem";
 import { Screen } from "@/components/slides/Screen";
 import { Table } from "@/components/slides/Table";
 import { Thought } from "@/components/slides/Thought";
+import { Walkthrough } from "@/components/slides/Walkthrough";
 import type { Slide } from "@/content/slides";
 
 /** One component per layout type. The slide's `type` picks it. `step` pins a stepped slide (print). */
@@ -33,12 +35,16 @@ export function SlideView({ slide, step }: { slide: Slide; step?: number }) {
       return <Onboarding slide={slide} forcedStep={step} />;
     case "annotated":
       return <Annotated slide={slide} />;
+    case "walkthrough":
+      return <Walkthrough slide={slide} forcedStep={step} />;
     case "problem":
       return <Problem slide={slide} />;
     case "screen":
       return <Screen slide={slide} />;
     case "email":
       return <Email slide={slide} />;
+    case "compare":
+      return <Compare slide={slide} forcedStep={step} />;
     case "journey":
       return <Journey slide={slide} />;
     case "flow":
